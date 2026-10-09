@@ -1,4 +1,4 @@
-const CACHE = 'portfolio-v15';
+const CACHE = 'portfolio-v16';
 const CORE = ['./index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 // Installieren: Dateien immer frisch vom Server holen (nicht aus dem HTTP-Cache)
 self.addEventListener('install', e => {
