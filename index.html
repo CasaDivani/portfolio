@@ -75,6 +75,25 @@ th{color:var(--mut);font-weight:700;font-size:.72rem;letter-spacing:.08em;text-t
 .x{background:none;border:0;color:var(--down);cursor:pointer;font-size:1.1rem;padding:4px 8px}
 .tw{overflow-x:auto}
 .hint{color:var(--mut);font-size:.8rem;margin-top:10px;line-height:1.5}
+
+.mut{color:var(--mut)}.sm{font-size:.75rem}
+.gcur{font-size:clamp(1.8rem,6vw,2.4rem);font-weight:800;letter-spacing:-.02em}
+.gnext{font-size:1.25rem;font-weight:800;color:var(--gold)}
+.tl{position:relative;height:124px;margin:14px 38px 8px}
+.tl .ln{position:absolute;left:0;right:0;top:58px;height:4px;border-radius:4px;background:linear-gradient(90deg,var(--cy),var(--gold))}
+.tl .mk{position:absolute;top:52px;width:16px;height:16px;margin-left:-8px;border-radius:50%;background:#0b1220;border:3px solid var(--gold);cursor:pointer;transition:transform .25s}
+.tl .mk.done{border-color:var(--up)}.tl .mk.today{border-color:var(--cy);box-shadow:0 0 12px var(--cy);cursor:default}.tl .mk.on{transform:scale(1.4)}
+.tl .lb{position:absolute;transform:translateX(-50%);text-align:center;font-size:.72rem;line-height:1.35;white-space:nowrap;color:var(--mut)}
+.tl .lb b{display:block;font-size:.82rem;color:var(--txt)}
+.tl .lb.a{top:4px}.tl .lb.b{top:78px}
+.gc{padding:16px;border-radius:20px;background:rgba(255,255,255,.06);border:1px solid var(--line);margin-top:14px;cursor:pointer;transition:border-color .25s}
+.gc.hl{border-color:var(--gold)}.gc.ok{border-color:rgba(61,220,151,.5)}
+.gamt{font-size:1.5rem;font-weight:800;margin-top:6px}
+.pbar{height:8px;border-radius:8px;background:rgba(255,255,255,.12);overflow:hidden;margin:10px 0 4px}
+.pbar i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,var(--cy),var(--gold))}
+.gs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.gs span{display:block}.gs b{font-size:1.05rem}
+label.btn{display:block;text-align:center}
 @media(max-width:900px){main{padding:22px 14px 70px}input,select{font-size:16px}.chartbox{height:280px}}
 @media(max-width:640px){
 header{margin:8px 10px 0;padding:8px 10px;top:calc(env(safe-area-inset-top,0px) + 8px)}
@@ -119,6 +138,8 @@ td:last-child{text-align:right}
 <button data-v="dash" class="active">Dashboard</button>
 <button data-v="assets">Assets erfassen</button>
 <button data-v="debts">Verbindlichkeiten</button>
+<button data-v="goals-view">Vermögensziele</button>
+<button data-v="backup">Datensicherung</button>
 </nav>
 
 <main>
@@ -136,6 +157,7 @@ td:last-child{text-align:right}
 <div class="card reveal r"><h2>Netto-Gesamtvermögen (Net Worth)</h2><div class="big" id="net">–</div><p class="hint" style="margin-top:6px">Gesamtwert abzüglich Verbindlichkeiten, in EUR</p></div>
 </div>
 </div>
+<div class="card reveal"><h2>Vermögensziele</h2><div id="goals"></div></div>
 <div class="reveal" style="margin-bottom:24px"><button class="btn" id="pdf">PDF herunterladen</button></div>
 <div class="card reveal"><h2>Einstandswert vs. aktueller Wert je Asset</h2><div class="chartbox"><canvas id="bar"></canvas></div></div>
 <div class="card reveal r"><div class="row" style="align-items:center;margin-bottom:10px"><h2 style="margin:0">Entwicklung Portfolio gesamt</h2><div class="rng" id="rng"><button data-d="1">1T</button><button data-d="7">7T</button><button data-d="30">30T</button><button data-d="90">90T</button><button data-d="365">1J</button><button data-d="1825">5J</button><button data-d="max" class="on">Max</button></div></div><div class="big" id="lchg" style="font-size:1.5rem;margin-bottom:10px">–</div><div class="chartbox"><canvas id="line"></canvas></div><p class="hint" id="lh"></p></div>
@@ -175,6 +197,28 @@ td:last-child{text-align:right}
 <p class="hint" id="dh"></p>
 </div>
 <div class="card reveal in"><div class="tw"><table><thead><tr><th>Verbindlichkeit</th><th>Offener Betrag</th><th>Kommentar</th><th></th></tr></thead><tbody id="dtb"></tbody></table></div></div>
+</section>
+<section id="goals-view" class="view">
+<div class="card reveal in"><div class="row" style="align-items:center"><h2 style="margin:0">Vermögensziele</h2><button class="btn" id="gadd">+ Neues Vermögensziel hinzufügen</button></div></div>
+<div class="card" id="gform" style="display:none">
+<div class="form">
+<label>Gesamtvermögen (Ziel in EUR)<input id="g-amt" type="number" step="any" placeholder="400000"></label>
+<label>Datum bis<input id="g-date" type="date"></label>
+<div class="full"><button class="btn" id="gsave">Speichern</button> <button class="btn ghost" id="gcancel">Abbrechen</button></div>
+</div>
+<p class="hint" id="gh"></p>
+</div>
+<div class="card reveal in"><div class="form"><label class="full">Berechnung auf Basis von<select id="g-base"><option value="net">Netto-Gesamtvermögen (nach Verbindlichkeiten)</option><option value="gross">Gesamtwert der Assets</option></select></label></div></div>
+<div class="card reveal in"><div class="tw"><table><thead><tr><th>Ziel bis</th><th>Gesamtvermögen</th><th>Status</th><th></th></tr></thead><tbody id="gtb"></tbody></table></div></div>
+</section>
+<section id="backup" class="view">
+<div class="card reveal in"><h2>Datensicherung</h2>
+<p style="line-height:1.55">Sichere deine Daten als Datei oder stelle sie aus einer früheren Sicherung wieder her. Auch der PDF-Report vom Dashboard enthält deine Daten und lässt sich hier wieder einlesen.</p>
+<div style="display:grid;gap:12px;margin-top:18px">
+<button class="btn" id="bk-save">Daten als Datei sichern (.json)</button>
+<label class="btn ghost" style="cursor:pointer">Aus PDF-Report oder Sicherung wiederherstellen<input id="bk-file" type="file" accept=".pdf,.json,application/pdf,application/json" hidden></label>
+</div>
+<p class="hint" id="bk-msg"></p></div>
 </section>
 </main>
 
@@ -335,7 +379,7 @@ $('rng').onclick=e=>{const d=e.target.dataset.d;if(!d)return;range=d==='max'?'ma
 function kpi(){
  const tot=total(),inv=invest(),pl=tot-inv,pct=inv?pl/inv*100:0,cls=pl>=0?'up':'down',sg=pl>=0?'+':'';
  $('total').textContent=eur(tot);$('inv').textContent=eur(inv);
- const dt=debts.reduce((x,d)=>x+d.amt,0);$('debt').textContent=eur(dt);$('net').textContent=eur(tot-dt);$('net').className='big'+(tot-dt<0?' down':'');renderDebts();
+ const dt=debts.reduce((x,d)=>x+d.amt,0);$('debt').textContent=eur(dt);$('net').textContent=eur(tot-dt);$('net').className='big'+(tot-dt<0?' down':'');renderDebts();renderGoals();renderGoalList();
  $('pct').textContent=sg+pct.toFixed(2).replace('.',',')+' %';$('abs').textContent=sg+eur(pl);
  $('pct').className='big '+cls;$('abs').className='big '+cls;
  $('empty').style.display=assets.length?'none':'block';
@@ -478,11 +522,14 @@ $('pdf').onclick=async()=>{
   ['Summe','','',E(inv),E(tot),P(inv?(tot-inv)/inv*100:0),''],(i,t)=>i===5?(String(t).startsWith('-')?DN:UP):null);
  table('Verbindlichkeiten',0,[{h:'Verbindlichkeit',w:62},{h:'Art',w:36},{h:'Offener Betrag',w:36,r:1},{h:'Kommentar',w:52}],
   debts.map(d=>[d.name,d.type,E(d.amt),d.com||'']),['Summe','',E(dt),'']);
+ if(goals.length){const cu=goalBase();table('Vermögensziele',0,[{h:'Ziel bis',w:34},{h:'Zielvermögen',w:46,r:1},{h:'Noch aufzubauen',w:46,r:1},{h:'Benötigte Perf.',w:30,r:1},{h:'Status',w:30}],
+  gsorted().map(g=>{const q=gst(g,cu);return[fd(g.date),E(g.amt),q.done?'-':E(q.miss),q.done||q.perf==null?'-':P(q.perf),q.done?'erreicht':q.days<0?'überfällig':span(q.days)]}))}
  if(y>H-45)page();else y+=10;
  pdf.setFontSize(11);
  [['Gesamtwert Assets',tot],['Verbindlichkeiten',-dt],['Netto-Gesamtvermögen (Net Worth)',tot-dt]].forEach(([l,v],i)=>{pdf.setFont('helvetica',i===2?'bold':'normal');pdf.setTextColor(...LT);pdf.text(l,m,y);pdf.text(E(v),W-m,y,{align:'right'});y+=7});
  const n=pdf.getNumberOfPages();
  for(let i=1;i<=n;i++){pdf.setPage(i);pdf.setFont('helvetica','normal');pdf.setFontSize(8);pdf.setTextColor(...MU);pdf.text('Seite '+i+' / '+n,W/2,H-7,{align:'center'})}
+ pdf.setProperties({title:'Portfolio Report '+today(),subject:'Portfolio-Report mit Datensicherung',keywords:'portfolio-data:'+toB64(snapshot())});
  pdf.save('portfolio-report-'+new Date().toISOString().slice(0,10)+'.pdf');
 };
 
@@ -517,6 +564,55 @@ $('dsave').onclick=()=>{const name=$('d-name').value.trim(),amt=+$('d-amt').valu
  if(dEdit){d.id=dEdit;debts[debts.findIndex(x=>x.id==dEdit)]=d}else{d.id=Date.now();debts.push(d)}
  store('pf_debts',debts);dClose();kpi()};
 $('dtb').onclick=e=>{const ed=e.target.dataset.dedit,dl=e.target.dataset.ddel;if(ed)dOpen(debts.find(x=>x.id==ed));if(dl&&confirm('Verbindlichkeit wirklich löschen?')){debts=debts.filter(x=>x.id!=dl);store('pf_debts',debts);kpi()}};
+
+/* Vermögensziele */
+let goals=load('pf_goals',[]),gEdit=null,hl=-1;
+const gd=d=>new Date(d+'T12:00:00'),fd=d=>gd(d).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'});
+const debtSum=()=>debts.reduce((x,d)=>x+d.amt,0);
+const goalBase=()=>load('pf_goalbase','net')==='gross'?total():total()-debtSum();
+const sh=v=>v>=1e6?(v/1e6).toLocaleString('de-DE',{maximumFractionDigits:2})+' Mio. €':v>=1e3?Math.round(v/1e3).toLocaleString('de-DE')+' Tsd. €':eur(v);
+const pr=v=>(v>=0?'+':'')+Math.round(v).toLocaleString('de-DE')+' %';
+function span(days){if(days<=0)return'fällig';if(days<31)return days+(days===1?' Tag':' Tage');let y=Math.floor(days/365.25),mo=Math.round((days-y*365.25)/30.44);if(mo>=12){y++;mo=0}return[y?y+(y===1?' Jahr':' Jahre'):'',mo?mo+(mo===1?' Monat':' Monate'):''].filter(Boolean).join(' ')}
+function gst(g,cur){const days=Math.ceil((gd(g.date)-Date.now())/864e5),yrs=days/365.25,done=cur>=g.amt;return{days,done,miss:Math.max(0,g.amt-cur),perf:cur>0?(g.amt/cur-1)*100:null,cagr:cur>0&&yrs>0&&!done?(Math.pow(g.amt/cur,1/yrs)-1)*100:null}}
+const gsorted=()=>[...goals].sort((a,b)=>a.date.localeCompare(b.date));
+function renderGoals(){
+ const el=$('goals'),cur=goalBase(),G=gsorted(),now=Date.now(),lbl=load('pf_goalbase','net')==='gross'?'Gesamtwert Assets':'Netto-Gesamtvermögen';
+ const S=G.map(g=>gst(g,cur)),ni=S.findIndex(s=>!s.done&&s.days>=0);
+ let h=`<div class="row" style="align-items:flex-end;gap:16px"><div><div class="mut sm">Aktueller Status · ${lbl}</div><div class="gcur">${eur(cur)}</div></div>`+(ni>=0?`<div style="text-align:right"><div class="mut sm">Nächstes Ziel</div><div class="gnext">${eur(G[ni].amt)}</div><div class="mut sm">bis ${fd(G[ni].date)}</div></div>`:'')+`</div>`;
+ if(!G.length){el.innerHTML=h+'<p class="hint">Noch kein Vermögensziel. Lege eines im Menü unter „Vermögensziele“ an.</p>';return}
+ const fut=G.map((g,i)=>i).filter(i=>gd(G[i].date)>now),last=Math.max(...fut.map(i=>gd(G[i].date).getTime()),now+864e5);
+ const pos=i=>Math.min(100,Math.max(0,(gd(G[i].date)-now)/(last-now)*100));
+ h+=`<div class="tl"><div class="ln"></div><i class="mk today" style="left:0"></i><div class="lb a" style="left:0"><b>Heute</b>${sh(cur)}</div>`+fut.map((i,k)=>`<i class="mk${S[i].done?' done':''}${i===hl?' on':''}" style="left:${pos(i)}%" data-gi="${i}"></i><div class="lb ${k%2?'a':'b'}" style="left:${pos(i)}%"><b>${fd(G[i].date)}</b>${sh(G[i].amt)}</div>`).join('')+`</div>`;
+ h+=G.map((g,i)=>{const s=S[i],prev=i>0&&!S[i-1].done&&S[i-1].days>0?G[i-1]:null,sd=prev?gd(prev.date).getTime():now,sa=prev?prev.amt:cur,ed=Math.max(1,Math.ceil((gd(g.date)-sd)/864e5)),gain=g.amt-sa,pct=Math.min(100,cur>0?cur/g.amt*100:0);
+  return `<div class="gc${i===hl?' hl':''}${s.done?' ok':''}" id="gc${i}" data-gi="${i}"><div class="row" style="align-items:center"><b>Ziel ${i+1} · bis ${fd(g.date)}</b><span class="tag">${s.done?'erreicht ✓':s.days<0?'überfällig':'noch '+span(s.days)}</span></div><div class="gamt">${eur(g.amt)}</div><div class="pbar"><i style="width:${pct.toFixed(1)}%"></i></div><div class="mut sm" style="text-align:right">${Math.floor(pct)} % erreicht</div><div class="gs"><div><span class="mut sm">Noch aufzubauen</span><b>${s.done?'–':eur(s.miss)}</b></div><div><span class="mut sm">Benötigte Performance</span><b>${s.done||s.perf==null?'–':pr(s.perf)}</b></div></div>`
+  +(s.cagr!=null?`<div class="mut sm" style="margin-top:8px">≈ ${s.cagr.toFixed(1).replace('.',',')} % p. a. Rendite nötig, wenn nichts nachgezahlt wird</div>`:'')
+  +(!s.done&&s.days>0?`<div class="mut sm" style="margin-top:6px">Etappe ${prev?fd(prev.date):'heute'} → ${fd(g.date)}: ${span(ed)} · ${gain>=0?'+':''}${eur(gain)} ≈ ${eur(gain/(ed/365.25))} p. A.</div>`:'')+`</div>`}).join('');
+ el.innerHTML=h;
+}
+$('goals').onclick=e=>{const t=e.target.closest('[data-gi]');if(!t)return;hl=hl===+t.dataset.gi?-1:+t.dataset.gi;renderGoals();if(hl>=0){const c=$('gc'+hl);c&&c.scrollIntoView({behavior:'smooth',block:'nearest'})}};
+function renderGoalList(){const cur=goalBase();$('gtb').innerHTML=gsorted().map(g=>{const s=gst(g,cur);return `<tr><td>${fd(g.date)}</td><td data-label="Gesamtvermögen">${eur(g.amt)}</td><td data-label="Status">${s.done?'erreicht ✓':s.days<0?'überfällig':'noch '+eur(s.miss)+' · '+span(s.days)}</td><td style="white-space:nowrap"><button class="x" style="color:var(--gold)" data-gedit="${g.id}" aria-label="Bearbeiten">✎</button> <button class="x" data-gdel="${g.id}" aria-label="Löschen">✕</button></td></tr>`}).join('')||'<tr><td colspan="4" style="text-align:left;color:var(--mut)">Noch keine Vermögensziele erfasst.</td></tr>'}
+const gClose=()=>{gEdit=null;$('gsave').textContent='Speichern';$('gform').style.display='none'};
+function gOpen(g){gEdit=g?g.id:null;$('gform').style.display='block';$('g-amt').value=g?g.amt:'';$('g-date').value=g?g.date:'';$('gh').textContent='Zielvermögen in EUR und das Datum, bis zu dem du es erreichen möchtest.';$('gsave').textContent=g?'Änderungen speichern':'Speichern';$('gform').scrollIntoView({behavior:'smooth',block:'center'});$('g-amt').focus()}
+$('gadd').onclick=()=>gOpen();$('gcancel').onclick=gClose;
+$('gsave').onclick=()=>{const amt=+$('g-amt').value,date=$('g-date').value;
+ if($('g-amt').value===''||!(amt>0)||!date){$('gh').textContent='Bitte Gesamtvermögen (EUR) und Datum eintragen.';return}
+ const g={amt,date};if(gEdit){g.id=gEdit;goals[goals.findIndex(x=>x.id==gEdit)]=g}else{g.id=Date.now();goals.push(g)}
+ store('pf_goals',goals);gClose();kpi()};
+$('gtb').onclick=e=>{const ed=e.target.dataset.gedit,dl=e.target.dataset.gdel;if(ed)gOpen(goals.find(x=>x.id==ed));if(dl&&confirm('Vermögensziel wirklich löschen?')){goals=goals.filter(x=>x.id!=dl);store('pf_goals',goals);kpi()}};
+$('g-base').value=load('pf_goalbase','net');$('g-base').onchange=()=>{store('pf_goalbase',$('g-base').value);kpi()};
+
+/* Datensicherung: JSON-Datei oder PDF-Report (Daten stecken im PDF) */
+const snapshot=()=>({app:'portfolio',v:1,date:new Date().toISOString(),assets,debts,goals,base:load('pf_goalbase','net')});
+const toB64=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+$('bk-save').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(snapshot(),null,1)],{type:'application/json'}));a.download='portfolio-sicherung-'+today()+'.json';document.body.appendChild(a);a.click();a.remove();$('bk-msg').textContent='Sicherung gespeichert. Bewahre die Datei sicher auf, sie enthält deine Vermögensdaten.'};
+$('bk-file').onchange=async e=>{
+ const f=e.target.files[0];e.target.value='';if(!f)return;let d=null;
+ try{const buf=new Uint8Array(await f.arrayBuffer());let t='';for(let i=0;i<buf.length;i+=8192)t+=String.fromCharCode.apply(null,buf.subarray(i,i+8192));
+  const m=/portfolio-data:([A-Za-z0-9+\/=]+)/.exec(t);d=JSON.parse(m?decodeURIComponent(escape(atob(m[1]))):new TextDecoder().decode(buf))}catch(x){}
+ if(!d||d.app!=='portfolio'||!Array.isArray(d.assets)){$('bk-msg').textContent='In dieser Datei wurden keine Portfolio-Daten gefunden.';return}
+ if(!confirm('Aktuelle Daten ('+assets.length+' Assets, '+debts.length+' Verbindlichkeiten, '+goals.length+' Ziele) durch die Sicherung vom '+new Date(d.date).toLocaleDateString('de-DE')+' ersetzen?'))return;
+ store('pf_assets',d.assets);store('pf_debts',d.debts||[]);store('pf_goals',d.goals||[]);store('pf_goalbase',d.base||'net');
+ $('bk-msg').textContent='Daten wiederhergestellt. Die App wird neu geladen …';setTimeout(()=>location.reload(),600)};
 
 /* Start + Live-Aktualisierung */
 (async()=>{
